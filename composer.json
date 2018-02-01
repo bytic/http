@@ -1,8 +1,8 @@
 {
-  "name": "bytic/view",
+  "name": "bytic/http",
   "type": "library",
   "description": "Php Framework",
-  "homepage": "https://github.com/ByTIC/view",
+  "homepage": "https://github.com/bytic/http",
   "license": "MIT",
   "authors": [
     {
@@ -12,7 +12,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Nip\\View\\": "src"
+      "Nip\\Http\\": "src"
     },
     "classmap": [
       "src"
@@ -22,7 +22,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Nip\\View\\Tests\\": "tests/"
+      "Nip\\Http\\Tests\\": "tests/"
     }
   },
   "require": {
