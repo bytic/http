@@ -2,7 +2,7 @@
 
 namespace Nip\Http\ServerMiddleware;
 
-use Interop\Http\ServerMiddleware\MiddlewareInterface;
+use Psr\Http\Server\MiddlewareInterface;
 
 /**
  * Interface DispatcherInterface
