@@ -17,13 +17,18 @@ trait RequestAwareTrait
     protected $request = null;
 
     /**
+     * @var boolean
+     */
+    protected $autoInitRequest = false;
+
+    /**
      * Get the Request.
      *
      * @return Request
      */
     public function getRequest()
     {
-        if ($this->request == null) {
+        if ($this->request == null && $this->isAutoInitRequest()) {
             $this->initRequest();
         }
 
@@ -41,6 +46,22 @@ trait RequestAwareTrait
         $this->request = $request;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAutoInitRequest(): bool
+    {
+        return $this->autoInitRequest;
+    }
+
+    /**
+     * @param bool $autoInitRequest
+     */
+    public function setAutoInitRequest(bool $autoInitRequest)
+    {
+        $this->autoInitRequest = $autoInitRequest;
     }
 
     public function initRequest()
