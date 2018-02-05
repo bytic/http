@@ -51,6 +51,14 @@ trait RequestAwareTrait
     /**
      * @return bool
      */
+    public function hasRequest()
+    {
+        return $this->request instanceof RequestInterface;
+    }
+
+    /**
+     * @return bool
+     */
     public function isAutoInitRequest(): bool
     {
         return $this->autoInitRequest;
