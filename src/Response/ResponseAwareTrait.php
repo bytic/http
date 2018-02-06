@@ -23,10 +23,12 @@ trait ResponseAwareTrait
     /**
      * Get the container.
      *
+     * @param bool $autoInit
      * @return Response
      */
-    public function getResponse()
+    public function getResponse($autoInit = false)
     {
+        $this->setAutoInitResponse($autoInit);
         if ($this->response == null && $this->isAutoInitResponse()) {
             $this->initResponse();
         }

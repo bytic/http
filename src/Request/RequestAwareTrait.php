@@ -24,10 +24,12 @@ trait RequestAwareTrait
     /**
      * Get the Request.
      *
+     * @param bool $autoInit
      * @return Request
      */
-    public function getRequest()
+    public function getRequest($autoInit = false)
     {
+        $this->setAutoInitRequest($autoInit);
         if ($this->request == null && $this->isAutoInitRequest()) {
             $this->initRequest();
         }
