@@ -70,6 +70,7 @@ trait PsrBridgeTrait
      */
     public function hasHeader($name)
     {
+        return $this->headers->has($name);
     }
 
     /**
@@ -88,6 +89,7 @@ trait PsrBridgeTrait
      */
     public function getHeader($name)
     {
+        return $this->headers->get($name);
     }
 
     /**
