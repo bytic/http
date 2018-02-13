@@ -27,7 +27,7 @@
   },
   "require": {
     "php": "^7.0",
-    "bytic/container": "^1.0",
+    "bytic/container": "^0.9",
     "bytic/request-detective": "^1.0",
     "symfony/http-foundation": "^3.1",
     "symfony/http-kernel": "^3.1",
