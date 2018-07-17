@@ -26,9 +26,11 @@ trait ResponseAwareTrait
      * @param bool $autoInit
      * @return Response
      */
-    public function getResponse($autoInit = false)
+    public function getResponse($autoInit = null)
     {
-        $this->setAutoInitResponse($autoInit);
+        if (is_bool($autoInit)) {
+            $this->setAutoInitResponse($autoInit);
+        }
         if ($this->response == null && $this->isAutoInitResponse()) {
             $this->initResponse();
         }
