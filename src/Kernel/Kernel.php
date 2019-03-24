@@ -14,6 +14,7 @@ use Nip\Request;
 use Nip\Router\Middleware\RouteResolverMiddleware;
 use Nip\Router\Router;
 use Nip\Session\Middleware\StartSession;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Debug\Exception\FatalThrowableError;
@@ -62,8 +63,8 @@ class Kernel implements KernelInterface
     /**
      * Create a new HTTP kernel instance.
      *
-     * @param  ApplicationInterface $app
-     * @param  Router $router
+     * @param ApplicationInterface $app
+     * @param Router $router
      */
     public function __construct(ApplicationInterface $app, Router $router)
     {
@@ -130,7 +131,7 @@ class Kernel implements KernelInterface
     /**
      * Report the exception to the exception handler.
      *
-     * @param  Exception $e
+     * @param Exception $e
      * @return void
      */
     protected function reportException(Exception $e)
@@ -170,24 +171,11 @@ class Kernel implements KernelInterface
      * @param Request $request
      * @param Response $response
      */
-    public function terminate(Request $request, Response $response)
+    public function terminate(RequestInterface $request, ResponseInterface $response)
     {
         $this->terminateMiddleware($request, $response);
         $this->getApplication()->terminate();
     }
-
-//    /**
-//     * @param Request $request
-//     * @return bool
-//     */
-//    protected function isValidRequest($request)
-//    {
-//        if ($request->isMalicious()) {
-//            return false;
-//        }
-//
-//        return true;
-//    }
 
     public function postRouting()
     {
