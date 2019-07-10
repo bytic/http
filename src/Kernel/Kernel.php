@@ -6,6 +6,7 @@ use Exception;
 use Nip\Application;
 use Nip\Application\ApplicationInterface;
 use Nip\Dispatcher\ActionDispatcherMiddleware;
+use Nip\Http\Kernel\Traits\HandleExceptionsTrait;
 use Nip\Http\Response\Response;
 use Nip\Http\Response\ResponseFactory;
 use Nip\Http\ServerMiddleware\Dispatcher;
@@ -21,8 +22,6 @@ use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
-use Whoops\Handler\PrettyPageHandler;
-use Whoops\Run as WhoopsRun;
 
 /**
  * Class Kernel
@@ -31,6 +30,7 @@ use Whoops\Run as WhoopsRun;
 class Kernel implements KernelInterface
 {
     use HasServerMiddleware;
+    use HandleExceptionsTrait;
 
     /**
      * The application implementation.
@@ -127,46 +127,6 @@ class Kernel implements KernelInterface
         new Dispatcher($this->middleware, $this->getApplication()->getContainer())
         )->dispatch($request);
     }
-
-    /**
-     * Report the exception to the exception handler.
-     *
-     * @param Exception $e
-     * @return void
-     */
-    protected function reportException(Exception $e)
-    {
-        app('log')->error($e);
-    }
-
-    /**
-     * @param Request|ServerRequestInterface $request
-     * @param Exception $e
-     * @return Response|ResponseInterface
-     */
-    protected function renderException($request, Exception $e)
-    {
-        if (config('app.debug') === true || config('app.debug') === 'true') {
-            $whoops = new WhoopsRun;
-            $whoops->allowQuit(false);
-            $whoops->writeToOutput(false);
-            $whoops->pushHandler(new PrettyPageHandler());
-
-            return ResponseFactory::make($whoops->handleException($e));
-        }
-
-        $request->setControllerName('error')->setActionName('index');
-
-        return (
-        new Dispatcher(
-            [
-                \Nip\Dispatcher\ActionDispatcherMiddleware::class
-            ],
-            $this->getApplication()->getContainer()
-        )
-        )->dispatch($request);
-    }
-
     /**
      * @param Request $request
      * @param Response $response
@@ -179,17 +139,5 @@ class Kernel implements KernelInterface
 
     public function postRouting()
     {
-    }
-
-    /**
-     * @param Exception $e
-     * @param Request|ServerRequestInterface $request
-     * @return Response
-     */
-    protected function handleException($request, Exception $e)
-    {
-        $this->reportException($e);
-
-        return $this->renderException($request, $e);
     }
 }
