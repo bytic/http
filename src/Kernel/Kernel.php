@@ -146,18 +146,7 @@ class Kernel implements KernelInterface
      */
     protected function renderException($request, Exception $e)
     {
-        if (config('app.debug') === false) {
-            $request->setControllerName('error')->setActionName('index');
-
-            return (
-            new Dispatcher(
-                [
-                    \Nip\Dispatcher\ActionDispatcherMiddleware::class
-                ],
-                $this->getApplication()->getContainer()
-            )
-            )->dispatch($request);
-        } else {
+        if (config('app.debug') === true || config('app.debug') === 'true') {
             $whoops = new WhoopsRun;
             $whoops->allowQuit(false);
             $whoops->writeToOutput(false);
@@ -165,6 +154,17 @@ class Kernel implements KernelInterface
 
             return ResponseFactory::make($whoops->handleException($e));
         }
+
+        $request->setControllerName('error')->setActionName('index');
+
+        return (
+        new Dispatcher(
+            [
+                \Nip\Dispatcher\ActionDispatcherMiddleware::class
+            ],
+            $this->getApplication()->getContainer()
+        )
+        )->dispatch($request);
     }
 
     /**
