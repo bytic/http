@@ -4,7 +4,14 @@ checks:
         duplication: true
 build:
     environment:
-        php: '7.1.1'
+        php: '7.2'
+
+    nodes:
+        analysis:
+            tests:
+                override:
+                    - php-scrutinizer-run
+
 tools:
     php_code_coverage:
         enabled: true

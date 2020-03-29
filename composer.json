@@ -27,7 +27,7 @@
     }
   },
   "require": {
-    "php": "^7.0",
+    "php": "^7.2",
     "bytic/application": "^1.0",
     "bytic/container": "^1.0",
     "bytic/request-detective": "^1.0",
@@ -39,8 +39,7 @@
     "psr/http-server-middleware": "^1.0"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "^3.0",
-    "phpunit/phpunit": "^7.2",
-    "mockery/mockery": "^1.1"
+    "phpunit/phpunit": "^7.0|^8.0",
+    "mockery/mockery": "^1.0"
   }
 }
