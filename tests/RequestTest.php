@@ -143,7 +143,7 @@ class RequestTest extends AbstractTest
         static::assertFalse($this->request->isMalicious());
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->request = new Request();

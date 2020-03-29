@@ -27,7 +27,7 @@
     }
   },
   "require": {
-    "php": "^7.0",
+    "php": "^7.2",
     "bytic/application": "^0.9",
     "bytic/container": "^0.9",
     "bytic/request-detective": "^1.0",
