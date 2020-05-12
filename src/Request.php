@@ -1,13 +1,9 @@
 <?php
 
-namespace Nip;
+namespace Nip\Http;
 
 use ByTIC\RequestDetective\RequestDetective;
 use Nip\Http\Request\Http;
-use Nip\Http\Request\Traits\ArrayAccessTrait;
-use Nip\Http\Request\Traits\InteractsWithMca;
-use Nip\Http\Request\Traits\InteractsWithUri;
-use Nip\Http\Request\Traits\PsrBridgeTrait;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -16,10 +12,14 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Request extends \Symfony\Component\HttpFoundation\Request implements \ArrayAccess, ServerRequestInterface
 {
-    use PsrBridgeTrait;
-    use InteractsWithUri;
-    use InteractsWithMca;
-    use ArrayAccessTrait;
+    use Traits\InteractsWithContentTypes;
+    use Traits\InteractsWithInput;
+
+    use Request\Traits\ArrayAccessTrait;
+    use Request\Traits\HasInterface;
+    use Request\Traits\PsrBridgeTrait;
+    use Request\Traits\InteractsWithUri;
+    use Request\Traits\InteractsWithMca;
 
     /**
      * @var Http
@@ -98,34 +98,6 @@ class Request extends \Symfony\Component\HttpFoundation\Request implements \Arra
         }
 
         return $this->http;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isCLI()
-    {
-        if (defined('STDIN')) {
-            return true;
-        }
-
-        if (php_sapi_name() === 'cli') {
-            return true;
-        }
-
-        if (array_key_exists('SHELL', $_ENV)) {
-            return true;
-        }
-
-        if (empty($_SERVER['REMOTE_ADDR']) and !isset($_SERVER['HTTP_USER_AGENT']) and count($_SERVER['argv']) > 0) {
-            return true;
-        }
-
-        if (!array_key_exists('REQUEST_METHOD', $_SERVER)) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

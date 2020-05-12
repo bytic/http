@@ -1,6 +1,7 @@
-
-
-tests/_output/*
-vendor/*
 .idea/workspace.xml
+.phpunit.result.cache
+
+vendor/*
+tests/_output/*
+
 composer.lock

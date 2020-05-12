@@ -15,7 +15,8 @@
       "Nip\\Http\\": "src"
     },
     "classmap": [
-      "src"
+      "src",
+      "legacy"
     ],
     "files": [
     ]
@@ -28,18 +29,19 @@
   },
   "require": {
     "php": "^7.2",
-    "bytic/application": "^1.0",
-    "bytic/container": "^1.0",
+    "ext-json": "*",
+    "bytic/application": "^0.9",
+    "bytic/container": "^0.9|^1.0",
     "bytic/request-detective": "^1.0",
-    "filp/whoops": "^2.1",
-    "symfony/http-foundation": "^3.1|^4.1",
-    "symfony/http-kernel": "^3.1|^4.1",
+    "symfony/http-foundation": "^3.1|^4.1|^5.0",
+    "symfony/http-kernel": "^3.1|^4.1|^5.0",
     "oscarotero/middleland": "^1.0",
     "psr/http-message": "^1.0",
     "psr/http-server-middleware": "^1.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.0|^8.0",
-    "mockery/mockery": "^1.0"
+    "phpunit/phpunit": "^7.0|^8.0|^9.0",
+    "mockery/mockery": "^1.0",
+    "filp/whoops": "^2.4"
   }
 }

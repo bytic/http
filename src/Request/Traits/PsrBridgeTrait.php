@@ -68,18 +68,7 @@ trait PsrBridgeTrait
      */
     public function getHeaders()
     {
-    }
-
-    /**
-     * Checks if a header exists by the given case-insensitive name.
-     *
-     * @param string $name Case-insensitive header field name.
-     * @return boolean|null Returns true if any header names match the given header
-     *     name using a case-insensitive string comparison. Returns false if
-     *     no matching header name is found in the message.
-     */
-    public function hasHeader($name)
-    {
+        return $this->headers;
     }
 
     /**
@@ -98,6 +87,7 @@ trait PsrBridgeTrait
      */
     public function getHeader($name)
     {
+        return $this->header($name);
     }
 
     /**
