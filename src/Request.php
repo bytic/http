@@ -17,6 +17,7 @@ class Request extends \Symfony\Component\HttpFoundation\Request implements \Arra
 
     use Request\Traits\ArrayAccessTrait;
     use Request\Traits\HasInterface;
+    use Request\Traits\HasJsonParameterBag;
     use Request\Traits\PsrBridgeTrait;
     use Request\Traits\InteractsWithUri;
     use Request\Traits\InteractsWithMca;
@@ -46,15 +47,6 @@ class Request extends \Symfony\Component\HttpFoundation\Request implements \Arra
         }
 
         return $instance;
-    }
-
-    /**
-     * @param $name
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return $this->get($name);
     }
 
     /**

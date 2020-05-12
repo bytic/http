@@ -42,4 +42,13 @@ trait ArrayAccessTrait
     {
         $this->attributes->remove($offset);
     }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->get($name);
+    }
 }

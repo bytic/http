@@ -185,28 +185,28 @@ trait InteractsWithInput
         return array_merge(array_keys($this->input()), $this->files->keys());
     }
 
-//    /**
-//     * Get all of the input and files for the request.
-//     *
-//     * @param array|mixed|null $keys
-//     * @return array
-//     */
-//    public function all($keys = null)
-//    {
-//        $input = array_replace_recursive($this->input(), $this->allFiles());
-//
-//        if (!$keys) {
-//            return $input;
-//        }
-//
-//        $results = [];
-//
-//        foreach (is_array($keys) ? $keys : func_get_args() as $key) {
-//            Arr::set($results, $key, Arr::get($input, $key));
-//        }
-//
-//        return $results;
-//    }
+    /**
+     * Get all of the input and files for the request.
+     *
+     * @param array|mixed|null $keys
+     * @return array
+     */
+    public function all($keys = null)
+    {
+        $input = array_replace_recursive($this->input(), $this->allFiles());
+
+        if (!$keys) {
+            return $input;
+        }
+
+        $results = [];
+
+        foreach (is_array($keys) ? $keys : func_get_args() as $key) {
+            Arr::set($results, $key, Arr::get($input, $key));
+        }
+
+        return $results;
+    }
 
     /**
      * Retrieve an input item from the request.
@@ -218,7 +218,11 @@ trait InteractsWithInput
     public function input($key = null, $default = null)
     {
         return data_get(
-            $this->getInputSource()->all() + $this->query->all(), $key, $default
+            $this->getInputSource()->all()
+            + $this->attributes->all()
+            + $this->query->all(),
+            $key,
+            $default
         );
     }
 

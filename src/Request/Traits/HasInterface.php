@@ -9,6 +9,20 @@ namespace Nip\Http\Request\Traits;
 trait HasInterface
 {
     /**
+     * Get the input source for the request.
+     *
+     * @return \Symfony\Component\HttpFoundation\ParameterBag
+     */
+    protected function getInputSource()
+    {
+        if ($this->isJson()) {
+            return $this->json();
+        }
+
+        return in_array($this->getRealMethod(), ['GET', 'HEAD']) ? $this->query : $this->request;
+    }
+
+    /**
      * @return bool
      */
     public function isCLI()
