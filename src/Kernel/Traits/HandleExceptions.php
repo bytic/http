@@ -10,10 +10,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Trait HandleExceptionsTrait
+ * Trait HandleExceptions
  * @package Nip\Http\Kernel\Traits
  */
-trait HandleExceptionsTrait
+trait HandleExceptions
 {
     /**
      * Report the exception to the exception handler.
@@ -33,7 +33,7 @@ trait HandleExceptionsTrait
      */
     protected function renderException($request, Exception $e)
     {
-        return (new Handler($this->getApplication()->getContainer()))->render($request, $e);
+        return (new Handler($this->getContainer()))->render($request, $e);
     }
 
     /**

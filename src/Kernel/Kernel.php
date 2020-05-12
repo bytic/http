@@ -3,12 +3,10 @@
 namespace Nip\Http\Kernel;
 
 use Exception;
-use Nip\Application;
 use Nip\Application\ApplicationInterface;
 use Nip\Dispatcher\ActionDispatcherMiddleware;
 use Nip\Http\Kernel\Traits\HandleExceptionsTrait;
 use Nip\Http\Response\Response;
-use Nip\Http\Response\ResponseFactory;
 use Nip\Http\ServerMiddleware\Dispatcher;
 use Nip\Http\ServerMiddleware\Traits\HasServerMiddleware;
 use Nip\Request;
@@ -29,15 +27,10 @@ use Throwable;
  */
 class Kernel implements KernelInterface
 {
-    use HasServerMiddleware;
-    use HandleExceptionsTrait;
+    use Traits\HandleExceptions;
+    use Traits\HasApplication;
 
-    /**
-     * The application implementation.
-     *
-     * @var Application
-     */
-    protected $app;
+    use HasServerMiddleware;
 
     /**
      * The router instance.
@@ -98,16 +91,6 @@ class Kernel implements KernelInterface
         }
 //        event(new Events\RequestHandled($request, $response));
         return $response;
-    }
-
-    /**
-     * Get the application instance.
-     *
-     * @return Application
-     */
-    public function getApplication()
-    {
-        return $this->app;
     }
 
     /**

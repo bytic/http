@@ -14,7 +14,7 @@ trait ArrayAccessTrait
      */
     public function offsetExists($offset)
     {
-        return !empty($this->get($offset));
+        return $this->has($offset);
     }
 
     /**
