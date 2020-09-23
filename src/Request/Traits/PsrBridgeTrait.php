@@ -253,6 +253,9 @@ trait PsrBridgeTrait
      */
     public function withHeader($name, $value)
     {
+        $new = clone $this;
+        $new->headers->set($name, $value);
+        return $new;
     }
 
     /**

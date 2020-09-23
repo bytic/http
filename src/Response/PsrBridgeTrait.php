@@ -2,6 +2,7 @@
 
 namespace Nip\Http\Response;
 
+use Nyholm\Psr7\Stream;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -13,6 +14,8 @@ use Psr\Http\Message\StreamInterface;
 trait PsrBridgeTrait
 {
 
+    /** @var StreamInterface|null */
+    protected $stream;
 
     /**
      * Return an instance with the specified HTTP protocol version.
@@ -132,6 +135,9 @@ trait PsrBridgeTrait
      */
     public function withHeader($name, $value)
     {
+        $new = clone $this;
+        $new->headers->set($name, $value);
+        return $new;
     }
 
     /**
@@ -170,13 +176,14 @@ trait PsrBridgeTrait
     {
     }
 
-    /**
-     * Gets the body of the message.
-     *
-     * @return StreamInterface Returns the body as a stream.
-     */
-    public function getBody()
+
+    public function getBody(): StreamInterface
     {
+        if (null === $this->stream) {
+            $this->stream = Stream::create('');
+        }
+
+        return $this->stream;
     }
 
     /**
@@ -194,6 +201,14 @@ trait PsrBridgeTrait
      */
     public function withBody(StreamInterface $body)
     {
+        if ($body === $this->stream) {
+            return $this;
+        }
+
+        $new = clone $this;
+        $new->stream = $body;
+
+        return $new;
     }
 
     /**
@@ -218,6 +233,19 @@ trait PsrBridgeTrait
      */
     public function withStatus($code, $reasonPhrase = '')
     {
+        if (!\is_int($code) && !\is_string($code)) {
+            throw new \InvalidArgumentException('Status code has to be an integer');
+        }
+
+        $code = (int) $code;
+        if ($code < 100 || $code > 599) {
+            throw new \InvalidArgumentException('Status code has to be an integer between 100 and 599');
+        }
+
+        $new = clone $this;
+        $new->setStatusCode($code, $reasonPhrase);
+
+        return $new;
     }
 
     /**
@@ -235,5 +263,15 @@ trait PsrBridgeTrait
      */
     public function getReasonPhrase()
     {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setContent($content)
+    {
+        parent::setContent($content);
+
+        $this->stream = Stream::create($this->getContent());
     }
 }
