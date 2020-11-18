@@ -31,7 +31,6 @@
   "require": {
     "php": "^7.2",
     "bytic/utility": "^1.0",
-    "bytic/container": "^0.9|^1.0",
     "bytic/request-detective": "^1.0",
     "symfony/http-foundation": "^3.1|^4.1|^5.0",
     "symfony/http-kernel": "^3.1|^4.1|^5.0",
@@ -43,6 +42,7 @@
   "require-dev": {
     "ext-json": "*",
     "bytic/application": "^0.9|^1.0",
+    "bytic/container": "^0.9|^1.0",
     "phpunit/phpunit": "^7.0|^8.0|^9.0",
     "mockery/mockery": "^1.0",
     "filp/whoops": "^2.4"
