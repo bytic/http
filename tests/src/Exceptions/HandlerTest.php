@@ -20,6 +20,7 @@ class HandlerTest extends AbstractTest
     {
         $container = new Container();
         Container::setInstance($container);
+        \Nip\Container\Utility\Container::container(true);
 
         $config = new Config(['app' => ['debug' => $value]]);
         $container->set('config', $config);
