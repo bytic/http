@@ -268,10 +268,12 @@ trait PsrBridgeTrait
     /**
      * @inheritDoc
      */
-    public function setContent($content)
+    public function setContent(?string $content): static
     {
         parent::setContent($content);
 
         $this->stream = Stream::create($this->getContent());
+
+        return $this;
     }
 }

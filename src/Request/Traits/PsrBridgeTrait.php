@@ -14,13 +14,9 @@ use Psr\Http\Message\UriInterface;
 trait PsrBridgeTrait
 {
     /**
-     * Retrieves the HTTP protocol version as a string.
-     *
-     * The string MUST contain only the HTTP version number (e.g., "1.1", "1.0").
-     *
-     * @return string HTTP protocol version.
+     * @inheritDoc
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
     }
 
