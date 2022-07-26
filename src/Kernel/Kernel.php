@@ -16,7 +16,7 @@ use Nip\Session\Middleware\StartSession;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
+use Symfony\Component\ErrorHandler\Error\FatalError;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -86,7 +86,7 @@ class Kernel implements KernelInterface
             $this->reportException($e);
             $response = $this->renderException($request, $e);
         } catch (Throwable $e) {
-            $this->reportException($e = new FatalThrowableError($e));
+            $this->reportException($e = new FatalError($e));
             $response = $this->renderException($request, $e);
         }
 //        event(new Events\RequestHandled($request, $response));
