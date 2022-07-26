@@ -19,6 +19,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Throwable;
 
 /**
@@ -77,8 +78,11 @@ class Kernel implements KernelInterface
      * @param bool $catch
      * @return ResponseInterface
      */
-    public function handle(SymfonyRequest $request, $type = self::MASTER_REQUEST, $catch = true)
-    {
+    public function handle(
+        SymfonyRequest $request,
+        int $type = HttpKernelInterface::MAIN_REQUEST,
+        bool $catch = true
+    ): \Symfony\Component\HttpFoundation\Response {
         try {
             $this->getApplication()->share('request', $request);
             return $this->handleRaw($request, $type);
@@ -86,7 +90,7 @@ class Kernel implements KernelInterface
             $this->reportException($e);
             $response = $this->renderException($request, $e);
         } catch (Throwable $e) {
-            $this->reportException($e = new FatalError($e));
+            $this->reportException($e);
             $response = $this->renderException($request, $e);
         }
 //        event(new Events\RequestHandled($request, $response));
@@ -110,6 +114,7 @@ class Kernel implements KernelInterface
         new Dispatcher($this->middleware, $this->getApplication()->getContainer())
         )->dispatch($request);
     }
+
     /**
      * @param Request $request
      * @param Response $response

@@ -46,7 +46,7 @@ class Handler
      * @param Exception $exception
      * @return ResponseInterface|JsonResponse|Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         $exception = $this->prepareException($exception);
 

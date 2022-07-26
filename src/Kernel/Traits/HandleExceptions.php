@@ -8,6 +8,7 @@ use Nip\Http\Response\Response;
 use Nip\Request;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * Trait HandleExceptions
@@ -21,7 +22,7 @@ trait HandleExceptions
      * @param Exception $e
      * @return void
      */
-    protected function reportException(Exception $e)
+    protected function reportException(Throwable $e)
     {
         app('log')->error($e);
     }
@@ -31,7 +32,7 @@ trait HandleExceptions
      * @param Exception $e
      * @return Response|ResponseInterface
      */
-    protected function renderException($request, Exception $e)
+    protected function renderException($request, Throwable $e)
     {
         return (new Handler($this->getContainer()))->render($request, $e);
     }
@@ -41,7 +42,7 @@ trait HandleExceptions
      * @param Request|ServerRequestInterface $request
      * @return Response
      */
-    protected function handleException($request, Exception $e)
+    protected function handleException($request, Throwable $e)
     {
         $this->reportException($e);
 
