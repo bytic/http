@@ -171,7 +171,7 @@ trait PsrBridgeTrait
      *
      * @return string
      */
-    public function getRequestTarget()
+    public function getRequestTarget(): string
     {
     }
 
@@ -192,7 +192,7 @@ trait PsrBridgeTrait
      * @param mixed $requestTarget
      * @return static
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget($requestTarget): static
     {
     }
 
@@ -211,7 +211,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod($method)
+    public function withMethod($method) :static
     {
     }
 
@@ -220,7 +220,7 @@ trait PsrBridgeTrait
      * @param bool $preserveHost
      * @return static
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function withUri(UriInterface $uri, $preserveHost = false): static
     {
     }
 
@@ -263,8 +263,9 @@ trait PsrBridgeTrait
      *
      * @return array
      */
-    public function getServerParams()
+    public function getServerParams(): array
     {
+        return [];
     }
 
     /**
@@ -277,8 +278,9 @@ trait PsrBridgeTrait
      *
      * @return array
      */
-    public function getCookieParams()
+    public function getCookieParams(): array
     {
+        return [];
     }
 
     /**
@@ -298,7 +300,7 @@ trait PsrBridgeTrait
      * @param array $cookies Array of key/value pairs representing cookies.
      * @return static
      */
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies):  \Psr\Http\Message\ServerRequestInterface
     {
     }
 
@@ -314,8 +316,9 @@ trait PsrBridgeTrait
      *
      * @return array
      */
-    public function getQueryParams()
+    public function getQueryParams(): array
     {
+        return $this->query->all();
     }
 
     /**
@@ -340,7 +343,7 @@ trait PsrBridgeTrait
      *     $_GET.
      * @return static
      */
-    public function withQueryParams(array $query)
+    public function withQueryParams(array $query): \Psr\Http\Message\ServerRequestInterface
     {
     }
 
@@ -357,7 +360,7 @@ trait PsrBridgeTrait
      * @return array An array tree of UploadedFileInterface instances; an empty
      *     array MUST be returned if no data is present.
      */
-    public function getUploadedFiles()
+    public function getUploadedFiles(): array
     {
     }
 
@@ -372,7 +375,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException if an invalid structure is provided.
      */
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles): \Psr\Http\Message\ServerRequestInterface
     {
     }
 
@@ -423,7 +426,7 @@ trait PsrBridgeTrait
      * @throws \InvalidArgumentException if an unsupported argument type is
      *     provided.
      */
-    public function withParsedBody($data)
+    public function withParsedBody($data): \Psr\Http\Message\ServerRequestInterface
     {
     }
 
@@ -438,7 +441,7 @@ trait PsrBridgeTrait
      *
      * @return array Attributes derived from the request.
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
     }
 
@@ -476,7 +479,7 @@ trait PsrBridgeTrait
      * @param mixed $value The value of the attribute.
      * @return static
      */
-    public function withAttribute($name, $value)
+    public function withAttribute($name, $value): static
     {
     }
 
@@ -494,7 +497,7 @@ trait PsrBridgeTrait
      * @param string $name The attribute name.
      * @return static
      */
-    public function withoutAttribute($name)
+    public function withoutAttribute($name): static
     {
     }
 }
