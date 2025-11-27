@@ -161,7 +161,7 @@ class Handler
                 return $this->renderExceptionWithWhoops($exception);
             }
             if ($exception instanceof RenderableExceptionInterface) {
-                return $exception->getMessagePublic();
+                return $exception->getContentHtml();
             }
             return $this->renderExceptionWithSymfony($exception, $this->isDebug());
         } catch (Exception $exception) {
