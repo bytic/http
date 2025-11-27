@@ -4,8 +4,8 @@ namespace Nip\Http\Exceptions;
 
 use Exception;
 use Nip\Container\Container;
+use Nip\Debug\Exceptions\Renderable\RenderableExceptionInterface;
 use Nip\Http\Response\ResponseFactory;
-use Nip\Http\ServerMiddleware\Dispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -157,9 +157,13 @@ class Handler
     protected function renderExceptionContent(Throwable $exception)
     {
         try {
-            return $this->isDebug() && class_exists(Whoops::class)
-                ? $this->renderExceptionWithWhoops($exception)
-                : $this->renderExceptionWithSymfony($exception, $this->isDebug());
+            if ($this->isDebug() && class_exists(Whoops::class)) {
+                return $this->renderExceptionWithWhoops($exception);
+            }
+            if ($exception instanceof RenderableExceptionInterface) {
+                return $exception->getMessagePublic();
+            }
+            return $this->renderExceptionWithSymfony($exception, $this->isDebug());
         } catch (Exception $exception) {
             return $this->renderExceptionWithSymfony($exception, $this->isDebug());
         }
