@@ -2,8 +2,12 @@
 
 namespace Nip\Http\Request\Traits;
 
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
+use Symfony\Component\HttpFoundation\HeaderBag;
 
 /**
  * Class PsrBridgeTrait
@@ -33,7 +37,7 @@ trait PsrBridgeTrait
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): MessageInterface
     {
     }
 
@@ -62,7 +66,7 @@ trait PsrBridgeTrait
      *     key MUST be a header name, and each value MUST be an array of strings
      *     for that header.
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -81,9 +85,9 @@ trait PsrBridgeTrait
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name)
+    public function getHeader(string $name): array
     {
-        return $this->header($name);
+        return $this->headers->all($name);
     }
 
     /**
@@ -105,7 +109,7 @@ trait PsrBridgeTrait
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine($name): string
     {
     }
 
@@ -125,7 +129,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value): MessageInterface
     {
     }
 
@@ -134,7 +138,7 @@ trait PsrBridgeTrait
      *
      * @return StreamInterface Returns the body as a stream.
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
     }
 
@@ -151,7 +155,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException When the body is not valid.
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface
     {
     }
 
@@ -192,7 +196,7 @@ trait PsrBridgeTrait
      * @param mixed $requestTarget
      * @return static
      */
-    public function withRequestTarget($requestTarget): static
+    public function withRequestTarget($requestTarget): RequestInterface
     {
     }
 
@@ -211,8 +215,9 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod($method) :static
+    public function withMethod($method): RequestInterface
     {
+        return $this;
     }
 
     /**
@@ -220,15 +225,16 @@ trait PsrBridgeTrait
      * @param bool $preserveHost
      * @return static
      */
-    public function withUri(UriInterface $uri, $preserveHost = false): static
+    public function  withUri(UriInterface $uri, bool $preserveHost = false): RequestInterface
     {
+        return $this;
     }
 
     /**
      * @param $name
      * @return static
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name): MessageInterface
     {
     }
 
@@ -247,7 +253,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader($name, $value)
+    public function withHeader($name, $value): MessageInterface
     {
         $new = clone $this;
         $new->headers->set($name, $value);
@@ -300,7 +306,7 @@ trait PsrBridgeTrait
      * @param array $cookies Array of key/value pairs representing cookies.
      * @return static
      */
-    public function withCookieParams(array $cookies):  \Psr\Http\Message\ServerRequestInterface
+    public function withCookieParams(array $cookies): \Psr\Http\Message\ServerRequestInterface
     {
     }
 
@@ -455,10 +461,10 @@ trait PsrBridgeTrait
      * This method obviates the need for a hasAttribute() method, as it allows
      * specifying a default value to return if the attribute is not found.
      *
-     * @see getAttributes()
      * @param string $name The attribute name.
      * @param mixed $default Default value to return if the attribute does not exist.
      * @return mixed
+     * @see getAttributes()
      */
     public function getAttribute($name, $default = null)
     {
@@ -474,12 +480,12 @@ trait PsrBridgeTrait
      * immutability of the message, and MUST return an instance that has the
      * updated attribute.
      *
-     * @see getAttributes()
      * @param string $name The attribute name.
      * @param mixed $value The value of the attribute.
      * @return static
+     * @see getAttributes()
      */
-    public function withAttribute($name, $value): static
+    public function withAttribute($name, $value): ServerRequestInterface
     {
     }
 
@@ -493,11 +499,11 @@ trait PsrBridgeTrait
      * immutability of the message, and MUST return an instance that removes
      * the attribute.
      *
-     * @see getAttributes()
      * @param string $name The attribute name.
      * @return static
+     * @see getAttributes()
      */
-    public function withoutAttribute($name): static
+    public function withoutAttribute($name): ServerRequestInterface
     {
     }
 }

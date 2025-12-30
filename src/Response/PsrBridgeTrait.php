@@ -3,6 +3,7 @@
 namespace Nip\Http\Response;
 
 use Nyholm\Psr7\Stream;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -30,7 +31,7 @@ trait PsrBridgeTrait
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): ResponseInterface
     {
     }
 
@@ -231,7 +232,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException For invalid status code arguments.
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
         if (!\is_int($code) && !\is_string($code)) {
             throw new \InvalidArgumentException('Status code has to be an integer');
@@ -261,7 +262,7 @@ trait PsrBridgeTrait
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
      * @return string Reason phrase; must return an empty string if none present.
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
     }
 
