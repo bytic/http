@@ -6,17 +6,13 @@ use Exception;
 use Nip\Application\ApplicationInterface;
 use Nip\Dispatcher\ActionDispatcherMiddleware;
 use Nip\Http\Kernel\Traits\HandleExceptionsTrait;
-use Nip\Http\Response\Response;
 use Nip\Http\ServerMiddleware\Dispatcher;
 use Nip\Http\ServerMiddleware\Traits\HasServerMiddleware;
-use Nip\Request;
 use Nip\Router\Middleware\RouteResolverMiddleware;
 use Nip\Router\Router;
 use Nip\Session\Middleware\StartSession;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Component\ErrorHandler\Error\FatalError;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -108,7 +104,7 @@ class Kernel implements KernelInterface
      * @throws \LogicException       If one of the listener does not behave as expected
      * @throws NotFoundHttpException When controller cannot be found
      */
-    protected function handleRaw(ServerRequestInterface $request, $type = self::MASTER_REQUEST)
+    protected function handleRaw(Request $request, $type = self::MASTER_REQUEST)
     {
         return (
         new Dispatcher($this->middleware, $this->getApplication()->getContainer())
@@ -119,7 +115,7 @@ class Kernel implements KernelInterface
      * @param Request $request
      * @param Response $response
      */
-    public function terminate(RequestInterface $request, ResponseInterface $response)
+    public function terminate(Request $request, Response $response)
     {
         $this->terminateMiddleware($request, $response);
         $this->getApplication()->terminate();

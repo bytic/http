@@ -2,14 +2,16 @@
 
 namespace Nip\Http;
 
+use ArrayAccess;
 use ByTIC\RequestDetective\RequestDetective;
 use Nip\Http\Request\Http;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class Request
  * @package Nip
  */
-class Request extends \Symfony\Component\HttpFoundation\Request implements \ArrayAccess
+class Request extends \Symfony\Component\HttpFoundation\Request implements ArrayAccess, ServerRequestInterface
 {
     use Traits\InteractsWithContentTypes;
     use Traits\InteractsWithInput;
