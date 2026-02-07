@@ -73,6 +73,76 @@ class Kernel implements KernelInterface
     }
 
     /**
+     * Get the route middleware groups.
+     *
+     * @return array
+     */
+    public function getMiddlewareGroups(): array
+    {
+        return $this->middlewareGroups;
+    }
+
+    /**
+     * Register a middleware group.
+     *
+     * @param string $name
+     * @param array $middleware
+     * @return $this
+     */
+    public function middlewareGroup(string $name, array $middleware)
+    {
+        $this->middlewareGroups[$name] = $middleware;
+
+        return $this;
+    }
+
+    /**
+     * Get the route middleware.
+     *
+     * @return array
+     */
+    public function getRouteMiddleware(): array
+    {
+        return $this->routeMiddleware;
+    }
+
+    /**
+     * Register a route middleware.
+     *
+     * @param string $name
+     * @param string $middleware
+     * @return $this
+     */
+    public function routeMiddleware(string $name, string $middleware)
+    {
+        $this->routeMiddleware[$name] = $middleware;
+
+        return $this;
+    }
+
+    /**
+     * Get a middleware instance by name.
+     *
+     * @param string $name
+     * @return string|null
+     */
+    public function getMiddleware(string $name): ?string
+    {
+        return $this->routeMiddleware[$name] ?? null;
+    }
+
+    /**
+     * Get the middleware instances for a group.
+     *
+     * @param string $group
+     * @return array
+     */
+    public function getMiddlewareGroup(string $group): array
+    {
+        return $this->middlewareGroups[$group] ?? [];
+    }
+
+    /**
      * Handle an incoming HTTP request.
      *
      * @param SymfonyRequest $request
