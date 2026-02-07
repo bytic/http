@@ -47,15 +47,10 @@ class ApplicationKernel extends Kernel
      * These middleware may be assigned to groups or used individually.
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'auth' => 'App\\Http\\Middleware\\Authenticate',
+        'guest' => 'App\\Http\\Middleware\\RedirectIfAuthenticated',
+        'throttle' => 'App\\Http\\Middleware\\ThrottleRequests',
+        'verified' => 'App\\Http\\Middleware\\EnsureEmailIsVerified',
     ];
 }
 
