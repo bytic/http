@@ -31,6 +31,7 @@ class Kernel implements KernelInterface
     use Traits\HandleExceptions;
     use Traits\HasApplication;
     use Traits\HasEventDispatcher;
+    use Traits\HasRequestStack;
 
     use HasServerMiddleware;
 
@@ -84,6 +85,9 @@ class Kernel implements KernelInterface
         int $type = HttpKernelInterface::MAIN_REQUEST,
         bool $catch = true
     ): Response {
+        // Push request to stack for tracking
+        $this->pushRequest($request);
+        
         try {
             $this->getApplication()->share('request', $request);
             
@@ -105,6 +109,9 @@ class Kernel implements KernelInterface
             return $this->handleThrowable($e, $request, $type, $catch);
         } catch (Throwable $e) {
             return $this->handleThrowable($e, $request, $type, $catch);
+        } finally {
+            // Pop request from stack
+            $this->popRequest();
         }
     }
 
