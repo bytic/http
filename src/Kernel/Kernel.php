@@ -104,7 +104,7 @@ class Kernel implements KernelInterface
      * @throws \LogicException       If one of the listener does not behave as expected
      * @throws NotFoundHttpException When controller cannot be found
      */
-    protected function handleRaw(Request $request, $type = self::MASTER_REQUEST)
+    protected function handleRaw(Request $request, $type = self::MAIN_REQUEST)
     {
         return (
         new Dispatcher($this->middleware, $this->getApplication()->getContainer())
