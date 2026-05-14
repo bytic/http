@@ -3,7 +3,6 @@
 namespace Nip\Http\Response;
 
 use Nyholm\Psr7\Stream;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -31,7 +30,7 @@ trait PsrBridgeTrait
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion($version): ResponseInterface
+    public function withProtocolVersion(string $version): static
     {
     }
 
@@ -60,8 +59,9 @@ trait PsrBridgeTrait
      *     key MUST be a header name, and each value MUST be an array of strings
      *     for that header.
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
+        return $this->headers->all();
     }
 
     /**
@@ -72,7 +72,7 @@ trait PsrBridgeTrait
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader($name)
+    public function hasHeader(string $name): bool
     {
         return $this->headers->has($name);
     }
@@ -91,9 +91,9 @@ trait PsrBridgeTrait
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name)
+    public function getHeader(string $name): array
     {
-        return $this->headers->get($name);
+        return $this->headers->all($name);
     }
 
     /**
@@ -115,8 +115,9 @@ trait PsrBridgeTrait
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine(string $name): string
     {
+        return implode(', ', $this->headers->all($name));
     }
 
     /**
@@ -134,7 +135,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader($name, $value)
+    public function withHeader(string $name, string|array $value): static
     {
         $new = clone $this;
         $new->headers->set($name, $value);
@@ -157,7 +158,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader(string $name, string|array $value): static
     {
     }
 
@@ -173,7 +174,7 @@ trait PsrBridgeTrait
      * @param string $name Case-insensitive header field name to remove.
      * @return static
      */
-    public function withoutHeader($name)
+    public function withoutHeader(string $name): static
     {
     }
 
@@ -200,7 +201,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException When the body is not valid.
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): static
     {
         if ($body === $this->stream) {
             return $this;
@@ -232,7 +233,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException For invalid status code arguments.
      */
-    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
+    public function withStatus(int $code, string $reasonPhrase = ''): static
     {
         if (!\is_int($code) && !\is_string($code)) {
             throw new \InvalidArgumentException('Status code has to be an integer');
@@ -264,6 +265,7 @@ trait PsrBridgeTrait
      */
     public function getReasonPhrase(): string
     {
+        return $this->statusText ?? '';
     }
 
     /**

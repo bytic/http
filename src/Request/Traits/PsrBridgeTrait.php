@@ -2,12 +2,8 @@
 
 namespace Nip\Http\Request\Traits;
 
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
-use Symfony\Component\HttpFoundation\HeaderBag;
 
 /**
  * Class PsrBridgeTrait
@@ -37,7 +33,7 @@ trait PsrBridgeTrait
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion($version): MessageInterface
+    public function withProtocolVersion(string $version): static
     {
     }
 
@@ -129,7 +125,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader($name, $value): MessageInterface
+    public function withAddedHeader(string $name, string|array $value): static
     {
     }
 
@@ -155,7 +151,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException When the body is not valid.
      */
-    public function withBody(StreamInterface $body): MessageInterface
+    public function withBody(StreamInterface $body): static
     {
     }
 
@@ -193,10 +189,10 @@ trait PsrBridgeTrait
      *
      * @link http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
      *     request-target forms allowed in request messages)
-     * @param mixed $requestTarget
+     * @param string $requestTarget
      * @return static
      */
-    public function withRequestTarget($requestTarget): RequestInterface
+    public function withRequestTarget(string $requestTarget): static
     {
     }
 
@@ -215,7 +211,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod($method): RequestInterface
+    public function withMethod(string $method): static
     {
         return $this;
     }
@@ -225,16 +221,16 @@ trait PsrBridgeTrait
      * @param bool $preserveHost
      * @return static
      */
-    public function  withUri(UriInterface $uri, bool $preserveHost = false): RequestInterface
+    public function withUri(UriInterface $uri, bool $preserveHost = false): static
     {
         return $this;
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return static
      */
-    public function withoutHeader($name): MessageInterface
+    public function withoutHeader(string $name): static
     {
     }
 
@@ -253,7 +249,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader($name, $value): MessageInterface
+    public function withHeader(string $name, string|array $value): static
     {
         $new = clone $this;
         $new->headers->set($name, $value);
@@ -306,7 +302,7 @@ trait PsrBridgeTrait
      * @param array $cookies Array of key/value pairs representing cookies.
      * @return static
      */
-    public function withCookieParams(array $cookies): \Psr\Http\Message\ServerRequestInterface
+    public function withCookieParams(array $cookies): static
     {
     }
 
@@ -349,7 +345,7 @@ trait PsrBridgeTrait
      *     $_GET.
      * @return static
      */
-    public function withQueryParams(array $query): \Psr\Http\Message\ServerRequestInterface
+    public function withQueryParams(array $query): static
     {
     }
 
@@ -381,7 +377,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException if an invalid structure is provided.
      */
-    public function withUploadedFiles(array $uploadedFiles): \Psr\Http\Message\ServerRequestInterface
+    public function withUploadedFiles(array $uploadedFiles): static
     {
     }
 
@@ -432,7 +428,7 @@ trait PsrBridgeTrait
      * @throws \InvalidArgumentException if an unsupported argument type is
      *     provided.
      */
-    public function withParsedBody($data): \Psr\Http\Message\ServerRequestInterface
+    public function withParsedBody(null|array|object $data): static
     {
     }
 
@@ -485,7 +481,7 @@ trait PsrBridgeTrait
      * @return static
      * @see getAttributes()
      */
-    public function withAttribute($name, $value): ServerRequestInterface
+    public function withAttribute(string $name, mixed $value): static
     {
     }
 
@@ -503,7 +499,7 @@ trait PsrBridgeTrait
      * @return static
      * @see getAttributes()
      */
-    public function withoutAttribute($name): ServerRequestInterface
+    public function withoutAttribute(string $name): static
     {
     }
 }
