@@ -32,7 +32,7 @@ class HandlerTest extends AbstractTest
     /**
      * @return array
      */
-    public function dataIsDebug()
+    public static function dataIsDebug(): array
     {
         return [
             ['', false],

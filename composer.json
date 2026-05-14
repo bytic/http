@@ -29,7 +29,7 @@
     }
   },
   "require": {
-    "php": "^8.0",
+    "php": "^8.2",
     "bytic/utility": "^1.0",
     "bytic/request-detective": "^1.0",
     "bytic/logger": "^1.0|^2.0",
@@ -49,7 +49,8 @@
     "bytic/config": "^1.0|^2.0",
     "bytic/phpqatools": "^1.0",
     "mockery/mockery": "^1.0",
-    "filp/whoops": "^2.4"
+    "filp/whoops": "^2.4",
+    "phpunit/phpunit": "^11.5"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

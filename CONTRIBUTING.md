@@ -16,7 +16,7 @@ This package follows these core principles:
 
 ### Prerequisites
 
-- PHP 8.0 or higher
+- PHP 8.2 or higher
 - Composer
 - Git
 

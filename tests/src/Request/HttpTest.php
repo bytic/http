@@ -35,7 +35,7 @@ class HttpTest extends AbstractTest
     /**
      * @return array
      */
-    public function getBaseUrlData()
+    public static function getBaseUrlData(): array
     {
         return [
             [
