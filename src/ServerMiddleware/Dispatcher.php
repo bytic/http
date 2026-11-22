@@ -37,6 +37,7 @@ class Dispatcher extends UtilsDispatcher implements DispatcherInterface
             $middleware[$key] = new $item();
         }
 
+        $middleware = array_values($middleware);
         $this->middleware = $middleware;
         parent::__construct($middleware);
     }
