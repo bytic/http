@@ -135,7 +135,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader(string $name, string|array $value): static
+    public function withHeader(string $name, $value): static
     {
         $new = clone $this;
         $new->headers->set($name, $value);
@@ -158,7 +158,7 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader(string $name, string|array $value): static
+    public function withAddedHeader(string $name, $value): static
     {
     }
 

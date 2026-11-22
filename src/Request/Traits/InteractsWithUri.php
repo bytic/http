@@ -41,9 +41,6 @@ trait InteractsWithUri
         return rtrim(preg_replace('/\?.*/', '', $this->getUri()), '/');
     }
 
-    /**
-     * @return array|mixed|string
-     */
     protected function prepareRequestUri(): string
     {
         if ((int) $this->server->get('REDIRECT_STATUS', '200') >= 400 && $this->server->has('REDIRECT_URL')) {

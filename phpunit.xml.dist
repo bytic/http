@@ -9,6 +9,7 @@
     <testsuites>
         <testsuite name="ByTIC Framework Test Suite">
             <directory suffix="Test.php">./tests/src</directory>
+            <exclude>./tests/src/AbstractTest.php</exclude>
         </testsuite>
     </testsuites>
 </phpunit>

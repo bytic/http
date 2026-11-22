@@ -4,6 +4,10 @@ namespace Nip\Http\Request\Traits;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
+use Psr\Http\Message\UploadedFileInterface;
+use Nyholm\Psr7\ServerRequest;
+use Nyholm\Psr7\UploadedFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 
 /**
  * Class PsrBridgeTrait
@@ -13,11 +17,61 @@ use Psr\Http\Message\UriInterface;
  */
 trait PsrBridgeTrait
 {
+    private $psrRequest;
+    private $parsedBodySet = false;
+    private $parsedBody;
+    private $uploadedFiles;
+    private $psrHeadersSnapshot;
+    private $psrUriChanged = false;
+    private $psrBodyChanged = false;
+    private $psrProtocolChanged = false;
+
+    private function resetPsrState(): void
+    {
+        $this->psrRequest = null;
+        $this->parsedBodySet = false;
+        $this->parsedBody = null;
+        $this->uploadedFiles = null;
+        $this->psrHeadersSnapshot = null;
+        $this->psrUriChanged = false;
+        $this->psrBodyChanged = false;
+        $this->psrProtocolChanged = false;
+    }
+
+    private function psrRequest(): ServerRequest
+    {
+        if ($this->psrRequest === null) {
+            $version = preg_replace('/^HTTP\//i', '', $this->server->get('SERVER_PROTOCOL', 'HTTP/1.1'));
+            $this->psrRequest = new ServerRequest($this->symfonyRequest->getMethod(), $this->symfonyRequest->getUri(), $this->headers->all(), $this->symfonyRequest->getContent(), $version, $this->server->all());
+            $this->psrHeadersSnapshot = $this->headers->all();
+        } elseif ($this->psrHeadersSnapshot !== $this->headers->all()) {
+            foreach ($this->psrHeadersSnapshot as $name => $values) {
+                if (!$this->headers->has($name)) {
+                    $this->psrRequest = $this->psrRequest->withoutHeader($name);
+                }
+            }
+            foreach ($this->headers->all() as $name => $values) {
+                if (!isset($this->psrHeadersSnapshot[$name]) || $this->psrHeadersSnapshot[$name] !== $values) {
+                    $this->psrRequest = $this->psrRequest->withHeader($name, $values);
+                }
+            }
+            $this->psrHeadersSnapshot = $this->headers->all();
+        }
+        return $this->psrRequest;
+    }
+
+    private function withPsrRequest($request): static
+    {
+        $new = clone $this;
+        $new->psrRequest = $request;
+        return $new;
+    }
     /**
      * @inheritDoc
      */
     public function getProtocolVersion(): string
     {
+        return $this->psrRequest()->getProtocolVersion();
     }
 
     /**
@@ -33,8 +87,11 @@ trait PsrBridgeTrait
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion(string $version): static
+    public function withProtocolVersion($version): static
     {
+        $new = $this->withPsrRequest($this->psrRequest()->withProtocolVersion($version));
+        $new->psrProtocolChanged = true;
+        return $new;
     }
 
     /**
@@ -64,7 +121,7 @@ trait PsrBridgeTrait
      */
     public function getHeaders(): array
     {
-        return $this->headers;
+        return $this->psrRequest()->getHeaders();
     }
 
     /**
@@ -81,9 +138,14 @@ trait PsrBridgeTrait
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader(string $name): array
+    public function getHeader($name): array
     {
-        return $this->headers->all($name);
+        return $this->psrRequest()->getHeader($name);
+    }
+
+    public function hasHeader($name): bool
+    {
+        return $this->psrRequest()->hasHeader($name);
     }
 
     /**
@@ -107,6 +169,7 @@ trait PsrBridgeTrait
      */
     public function getHeaderLine($name): string
     {
+        return $this->psrRequest()->getHeaderLine($name);
     }
 
     /**
@@ -125,8 +188,12 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader(string $name, string|array $value): static
+    public function withAddedHeader($name, $value): static
     {
+        $new = $this->withPsrRequest($this->psrRequest()->withAddedHeader($name, $value));
+        $new->headers->set($name, $new->psrRequest->getHeader($name));
+        $new->psrHeadersSnapshot = $new->headers->all();
+        return $new;
     }
 
     /**
@@ -136,6 +203,7 @@ trait PsrBridgeTrait
      */
     public function getBody(): StreamInterface
     {
+        return $this->psrRequest()->getBody();
     }
 
     /**
@@ -153,6 +221,10 @@ trait PsrBridgeTrait
      */
     public function withBody(StreamInterface $body): static
     {
+        $new = $this->withPsrRequest($this->psrRequest()->withBody($body));
+        $new->psrBodyChanged = true;
+        $new->json = null;
+        return $new;
     }
 
     /**
@@ -173,6 +245,7 @@ trait PsrBridgeTrait
      */
     public function getRequestTarget(): string
     {
+        return $this->psrRequest()->getRequestTarget();
     }
 
     /**
@@ -192,8 +265,9 @@ trait PsrBridgeTrait
      * @param string $requestTarget
      * @return static
      */
-    public function withRequestTarget(string $requestTarget): static
+    public function withRequestTarget($requestTarget): static
     {
+        return $this->withPsrRequest($this->psrRequest()->withRequestTarget($requestTarget));
     }
 
     /**
@@ -211,9 +285,16 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod(string $method): static
+    public function getMethod(): string
     {
-        return $this;
+        return $this->psrRequest()->getMethod();
+    }
+
+    public function withMethod($method): static
+    {
+        $new = $this->withPsrRequest($this->psrRequest()->withMethod($method));
+        $new->symfonyRequest->setMethod($method);
+        return $new;
     }
 
     /**
@@ -221,17 +302,32 @@ trait PsrBridgeTrait
      * @param bool $preserveHost
      * @return static
      */
-    public function withUri(UriInterface $uri, bool $preserveHost = false): static
+    public function getUri(): UriInterface
     {
-        return $this;
+        return $this->psrRequest()->getUri();
+    }
+
+    public function withUri(UriInterface $uri, $preserveHost = false): static
+    {
+        $new = $this->withPsrRequest($this->psrRequest()->withUri($uri, $preserveHost));
+        $new->psrUriChanged = true;
+        if ($new->psrRequest->hasHeader('Host')) {
+            $new->headers->set('Host', $new->psrRequest->getHeader('Host'));
+        }
+        $new->psrHeadersSnapshot = $new->headers->all();
+        return $new;
     }
 
     /**
      * @param string $name
      * @return static
      */
-    public function withoutHeader(string $name): static
+    public function withoutHeader($name): static
     {
+        $new = $this->withPsrRequest($this->psrRequest()->withoutHeader($name));
+        $new->headers->remove($name);
+        $new->psrHeadersSnapshot = $new->headers->all();
+        return $new;
     }
 
     /**
@@ -249,10 +345,11 @@ trait PsrBridgeTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader(string $name, string|array $value): static
+    public function withHeader($name, $value): static
     {
-        $new = clone $this;
-        $new->headers->set($name, $value);
+        $new = $this->withPsrRequest($this->psrRequest()->withHeader($name, $value));
+        $new->headers->set($name, $new->psrRequest->getHeader($name));
+        $new->psrHeadersSnapshot = $new->headers->all();
         return $new;
     }
 
@@ -267,7 +364,7 @@ trait PsrBridgeTrait
      */
     public function getServerParams(): array
     {
-        return [];
+        return $this->server->all();
     }
 
     /**
@@ -282,7 +379,7 @@ trait PsrBridgeTrait
      */
     public function getCookieParams(): array
     {
-        return [];
+        return $this->cookies->all();
     }
 
     /**
@@ -304,6 +401,9 @@ trait PsrBridgeTrait
      */
     public function withCookieParams(array $cookies): static
     {
+        $new = clone $this;
+        $new->cookies->replace($cookies);
+        return $new;
     }
 
     /**
@@ -347,6 +447,9 @@ trait PsrBridgeTrait
      */
     public function withQueryParams(array $query): static
     {
+        $new = clone $this;
+        $new->query->replace($query);
+        return $new;
     }
 
 
@@ -364,6 +467,35 @@ trait PsrBridgeTrait
      */
     public function getUploadedFiles(): array
     {
+        return $this->uploadedFiles ?? $this->normalizeUploadedFiles($this->files->all());
+    }
+
+    private function normalizeUploadedFiles(array $files): array
+    {
+        $result = [];
+        foreach ($files as $key => $file) {
+            if (is_array($file)) {
+                $result[$key] = $this->normalizeUploadedFiles($file);
+            } elseif ($file instanceof SymfonyUploadedFile) {
+                $result[$key] = new UploadedFile($file->getPathname(), $file->getSize() ?: 0, $file->getError(), $file->getClientOriginalName(), $file->getClientMimeType());
+            } elseif ($file instanceof UploadedFileInterface) {
+                $result[$key] = $file;
+            } elseif ($file !== null) {
+                throw new \InvalidArgumentException('Invalid uploaded file');
+            }
+        }
+        return $result;
+    }
+
+    private function validateUploadedFiles(array $files): void
+    {
+        foreach ($files as $file) {
+            if (is_array($file)) {
+                $this->validateUploadedFiles($file);
+            } elseif (!$file instanceof UploadedFileInterface) {
+                throw new \InvalidArgumentException('Invalid uploaded file');
+            }
+        }
     }
 
     /**
@@ -379,6 +511,10 @@ trait PsrBridgeTrait
      */
     public function withUploadedFiles(array $uploadedFiles): static
     {
+        $this->validateUploadedFiles($uploadedFiles);
+        $new = clone $this;
+        $new->uploadedFiles = $uploadedFiles;
+        return $new;
     }
 
     /**
@@ -398,6 +534,12 @@ trait PsrBridgeTrait
      */
     public function getParsedBody()
     {
+        if ($this->parsedBodySet) {
+            return $this->parsedBody;
+        }
+        $body = $this->request->all();
+        $type = strtolower($this->headers->get('Content-Type', ''));
+        return $body || ($this->getMethod() === 'POST' && (str_starts_with($type, 'application/x-www-form-urlencoded') || str_starts_with($type, 'multipart/form-data'))) ? $body : null;
     }
 
     /**
@@ -428,8 +570,18 @@ trait PsrBridgeTrait
      * @throws \InvalidArgumentException if an unsupported argument type is
      *     provided.
      */
-    public function withParsedBody(null|array|object $data): static
+    public function withParsedBody($data): static
     {
+        if ($data !== null && !is_array($data) && !is_object($data)) {
+            throw new \InvalidArgumentException('Parsed body must be an array, object or null');
+        }
+        $new = clone $this;
+        $new->parsedBodySet = true;
+        $new->parsedBody = $data;
+        if (is_array($data)) {
+            $new->request->replace($data);
+        }
+        return $new;
     }
 
     /**
@@ -445,6 +597,7 @@ trait PsrBridgeTrait
      */
     public function getAttributes(): array
     {
+        return $this->attributes->all();
     }
 
     /**
@@ -464,6 +617,7 @@ trait PsrBridgeTrait
      */
     public function getAttribute($name, $default = null)
     {
+        return $this->attributes->has($name) ? $this->attributes->all()[$name] : $default;
     }
 
     /**
@@ -481,8 +635,11 @@ trait PsrBridgeTrait
      * @return static
      * @see getAttributes()
      */
-    public function withAttribute(string $name, mixed $value): static
+    public function withAttribute($name, $value): static
     {
+        $new = clone $this;
+        $new->attributes->set($name, $value);
+        return $new;
     }
 
     /**
@@ -499,7 +656,10 @@ trait PsrBridgeTrait
      * @return static
      * @see getAttributes()
      */
-    public function withoutAttribute(string $name): static
+    public function withoutAttribute($name): static
     {
+        $new = clone $this;
+        $new->attributes->remove($name);
+        return $new;
     }
 }

@@ -8,6 +8,7 @@ namespace Nip\Http\Tests\Request;
 
 use Nip\Http\Tests\AbstractTest;
 use Nip\Request;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Class HttpTest
@@ -20,9 +21,7 @@ class HttpTest extends AbstractTest
      */
     protected $tester;
 
-    /**
-     * @dataProvider getBaseUrlData
-     */
+    #[DataProvider('getBaseUrlData')]
     public function testGetBaseUrl($uri, $server, $expectedBaseUrl, $expectedPathInfo)
     {
         $request = Request::create($uri, 'GET', [], [], [], $server);

@@ -6,6 +6,7 @@ use Nip\Config\Config;
 use Nip\Container\Container;
 use Nip\Http\Tests\AbstractTest;
 use Nip\Http\Exceptions\Handler;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Class HandlerTest
@@ -13,9 +14,7 @@ use Nip\Http\Exceptions\Handler;
  */
 class HandlerTest extends AbstractTest
 {
-    /**
-     * @dataProvider dataIsDebug
-     */
+    #[DataProvider('dataIsDebug')]
     public function testIsDebug($value, $debug)
     {
         $container = new Container();

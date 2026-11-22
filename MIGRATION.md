@@ -2,6 +2,10 @@
 
 This guide helps you migrate from PSR-15 middleware to Symfony-style event listeners.
 
+## Request compatibility
+
+`Nip\Http\Request` extends Symfony's request. For PSR middleware, use `$request->getPSRRequest()` (or the existing `$request->getPRSRequest()` alias) to obtain a `ServerRequestInterface` via Symfony's PSR HTTP Message Bridge. Request metadata is copied, but body streams and object-valued attributes may share state. The bridge parses JSON request bodies into the PSR parsed body.
+
 ## Why Migrate?
 
 - **Better separation of concerns** - Events are more granular than middleware

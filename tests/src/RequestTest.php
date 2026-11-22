@@ -50,6 +50,17 @@ class RequestTest extends AbstractTest
         static::assertEquals('value44', $this->request->get('var4'));
     }
 
+    public function testGetPreservesNullAndArrayValues()
+    {
+        $this->request->attributes->set('null', null);
+        $this->request->query->set('null', 'fallback');
+        $this->request->request->set('array', ['value']);
+
+        static::assertNull($this->request->get('null', 'default'));
+        static::assertSame(['value'], $this->request->get('array'));
+        static::assertSame('default', $this->request->get('missing', 'default'));
+    }
+
     public function testInitialize()
     {
         $get['var1'] = 'value1';

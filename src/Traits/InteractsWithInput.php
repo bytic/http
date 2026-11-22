@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 trait InteractsWithInput
 {
+    protected $convertedFiles;
 
     /**
      * Retrieve a server variable from the request.
