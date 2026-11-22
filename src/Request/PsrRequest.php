@@ -41,7 +41,9 @@ class PsrRequest implements BaseRequest, ServerRequestInterface
 
     public function __call(string $name, array $arguments)
     {
-        return $this->symfonyRequest->{$name}(...$arguments);
+        $result = $this->symfonyRequest->{$name}(...$arguments);
+
+        return $result === $this->symfonyRequest ? $this : $result;
     }
 
     public function __clone()
