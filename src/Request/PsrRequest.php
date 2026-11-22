@@ -31,6 +31,14 @@ class PsrRequest implements BaseRequest, ServerRequestInterface
         return $this->symfonyRequest->{$name};
     }
 
+    public function setMethod($method): void
+    {
+        $this->symfonyRequest->setMethod($method);
+        if ($this->psrRequest !== null) {
+            $this->psrRequest = $this->psrRequest->withMethod($this->symfonyRequest->getMethod());
+        }
+    }
+
     public function __call(string $name, array $arguments)
     {
         return $this->symfonyRequest->{$name}(...$arguments);
