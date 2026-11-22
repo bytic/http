@@ -28,6 +28,21 @@ class RequestPsrTest extends AbstractTest
         static::assertInstanceOf(ServerRequestInterface::class, $request->getPRSRequest());
     }
 
+    public function testPsrRequestWrapsTheSymfonyRequestAndRetainsRequestHelpers()
+    {
+        $request = Request::create('https://example.com/');
+        $psrRequest = $request->getPSRRequest();
+
+        static::assertNotSame($request, $psrRequest->getSymfonyRequest());
+        static::assertInstanceOf(Request::class, $psrRequest->getSymfonyRequest());
+
+        $psrRequest->setModuleName('admin');
+        $psrRequest->attributes->set('route', 'dashboard');
+
+        static::assertSame('admin', $psrRequest->getSymfonyRequest()->getModuleName());
+        static::assertSame('dashboard', $psrRequest->getSymfonyRequest()->attributes->get('route'));
+    }
+
     public function testCorrectlySpelledAliasAndProtocolVersion()
     {
         $request = Request::create('https://example.com/', 'GET', [], [], [], ['SERVER_PROTOCOL' => 'HTTP/2.0']);

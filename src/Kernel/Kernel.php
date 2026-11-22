@@ -10,6 +10,8 @@ use Nip\Http\Kernel\Event\RequestEvent;
 use Nip\Http\Kernel\Event\ResponseEvent;
 use Nip\Http\Kernel\Event\TerminateEvent;
 use Nip\Http\Kernel\Traits\HandleExceptionsTrait;
+use Nip\Http\Request\BaseRequest;
+use Nip\Http\Request\PsrRequest;
 use Nip\Http\ServerMiddleware\Dispatcher;
 use Nip\Http\ServerMiddleware\Traits\HasServerMiddleware;
 use Nip\Router\Middleware\RouteResolverMiddleware;
@@ -18,6 +20,7 @@ use Nip\Session\Middleware\StartSession;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Throwable;
@@ -198,9 +201,18 @@ class Kernel implements KernelInterface
      */
     protected function handleRaw(Request $request, $type = self::MAIN_REQUEST)
     {
-        return (
-        new Dispatcher($this->middleware, $this->getApplication()->getContainer())
-        )->dispatch($request);
+        $symfonyRequest = $request instanceof BaseRequest
+            ? $request->getSymfonyRequest()
+            : $request;
+        $psrRequest = new PsrRequest($symfonyRequest, false);
+        $psrResponse = (new Dispatcher($this->middleware, $this->getApplication()->getContainer()))
+            ->dispatch($psrRequest);
+
+        if ($psrResponse instanceof Response) {
+            return $psrResponse;
+        }
+
+        return (new HttpFoundationFactory())->createResponse($psrResponse);
     }
 
     /**
