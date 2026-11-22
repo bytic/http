@@ -42,7 +42,12 @@ trait PsrBridgeTrait
     {
         if ($this->psrRequest === null) {
             $version = preg_replace('/^HTTP\//i', '', $this->server->get('SERVER_PROTOCOL', 'HTTP/1.1'));
-            $this->psrRequest = new ServerRequest($this->symfonyRequest->getMethod(), $this->symfonyRequest->getUri(), $this->headers->all(), $this->symfonyRequest->getContent(), $version, $this->server->all());
+            $uri = $this->symfonyRequest->getUri();
+            if ($this->symfonyRequest->getHost() === '') {
+                $uri = $this->symfonyRequest->getRequestUri() ?: '/';
+            }
+
+            $this->psrRequest = new ServerRequest($this->symfonyRequest->getMethod(), $uri, $this->headers->all(), $this->symfonyRequest->getContent(), $version, $this->server->all());
             $this->psrHeadersSnapshot = $this->headers->all();
         } elseif ($this->psrHeadersSnapshot !== $this->headers->all()) {
             foreach ($this->psrHeadersSnapshot as $name => $values) {
