@@ -2,10 +2,11 @@
 
 namespace Nip\Http\Request;
 
+use ArrayAccess;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 
-class PsrRequest implements BaseRequest, ServerRequestInterface
+class PsrRequest implements ArrayAccess, BaseRequest, ServerRequestInterface
 {
     use Traits\PsrBridgeTrait;
 
@@ -19,6 +20,52 @@ class PsrRequest implements BaseRequest, ServerRequestInterface
     public function getSymfonyRequest(): FoundationRequest
     {
         return $this->symfonyRequest;
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        if ($this->symfonyRequest instanceof ArrayAccess) {
+            return $this->symfonyRequest->offsetExists($offset);
+        }
+
+        return $this->symfonyRequest->attributes->has($offset)
+            || $this->symfonyRequest->query->has($offset)
+            || $this->symfonyRequest->request->has($offset);
+    }
+
+    public function offsetGet(mixed $offset): mixed
+    {
+        if ($this->symfonyRequest instanceof ArrayAccess) {
+            return $this->symfonyRequest->offsetGet($offset);
+        }
+
+        foreach ([$this->symfonyRequest->attributes, $this->symfonyRequest->query, $this->symfonyRequest->request] as $bag) {
+            if ($bag->has($offset)) {
+                return $bag->all()[$offset];
+            }
+        }
+
+        return null;
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        if ($this->symfonyRequest instanceof ArrayAccess) {
+            $this->symfonyRequest->offsetSet($offset, $value);
+            return;
+        }
+
+        $this->symfonyRequest->attributes->set($offset, $value);
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        if ($this->symfonyRequest instanceof ArrayAccess) {
+            $this->symfonyRequest->offsetUnset($offset);
+            return;
+        }
+
+        $this->symfonyRequest->attributes->remove($offset);
     }
 
     public function getPSRRequest(): ServerRequestInterface
