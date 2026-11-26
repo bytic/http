@@ -3,6 +3,7 @@
 namespace Nip\Http\Tests;
 
 use Nip\Http\Request;
+use Nip\Http\Request\PsrRequest;
 use Nyholm\Psr7\Stream;
 use Nyholm\Psr7\Uri;
 use Psr\Http\Message\ServerRequestInterface;
@@ -41,6 +42,45 @@ class RequestPsrTest extends AbstractTest
 
         static::assertSame('admin', $psrRequest->getSymfonyRequest()->getModuleName());
         static::assertSame('dashboard', $psrRequest->getSymfonyRequest()->attributes->get('route'));
+    }
+
+    public function testPsrRequestRetainsArrayAccessCompatibility()
+    {
+        $request = Request::create('https://example.com/?page=2');
+        $psrRequest = $request->getPSRRequest();
+        $psrRequest['route'] = 'dashboard';
+
+        static::assertTrue(isset($psrRequest['page']));
+        static::assertSame('2', $psrRequest['page']);
+        static::assertSame('dashboard', $psrRequest['route']);
+
+        unset($psrRequest['route']);
+
+        static::assertFalse(isset($psrRequest['route']));
+    }
+
+    public function testPsrArrayAccessMatchesWrappedRequestForNestedJsonInput()
+    {
+        $request = Request::create('https://example.com/', 'POST', [], [], [], ['CONTENT_TYPE' => 'application/json'], '{"user":{"name":"Ada"}}');
+        $psrRequest = new PsrRequest($request, false);
+
+        static::assertTrue(isset($request['user.name']));
+        static::assertSame(isset($request['user.name']), isset($psrRequest['user.name']));
+    }
+
+    public function testPsrArrayAccessWorksWithPlainSymfonyRequest()
+    {
+        $request = new SymfonyRequest(['key' => 'query'], ['form' => 'value'], ['key' => 'attribute']);
+        $psrRequest = new PsrRequest($request, false);
+
+        static::assertSame('attribute', $psrRequest['key']);
+        static::assertTrue(isset($psrRequest['form']));
+        static::assertSame('value', $psrRequest['form']);
+        $psrRequest['key'] = 'updated';
+        static::assertSame('updated', $request->attributes->get('key'));
+        unset($psrRequest['key']);
+        static::assertSame('query', $psrRequest['key']);
+        static::assertNull($psrRequest['missing']);
     }
 
     public function testCorrectlySpelledAliasAndProtocolVersion()
